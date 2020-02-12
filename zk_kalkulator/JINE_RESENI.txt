@@ -1,0 +1,188 @@
+#include <iostream>
+#include <iomanip>
+#include <exception>
+
+using namespace std;
+
+enum typVyrazu{OPERATOR,HODNOTA};
+
+
+struct VyjimkaKalkulatoru : public exception
+{
+	const char * what() const throw ()
+	{
+		return "spatne zadane udaje";
+	}
+};
+
+
+class PrvekVyrazu {
+	int hodnotaInt;
+	double hodnotaDouble;
+	char operand;
+
+public:
+	PrvekVyrazu(int hodnota) : hodnotaInt(hodnota), hodnotaDouble(0) {};
+
+	PrvekVyrazu(double hodnota) : hodnotaDouble(hodnota), hodnotaInt(0) {};
+
+	PrvekVyrazu(char operand) : operand(operand) {};
+
+	virtual ~PrvekVyrazu() {};
+	int getHodnotaVyrazuInt() const {
+		return hodnotaInt;
+	}
+
+	double getHodnotaVyrazuDouble() const{
+		return hodnotaDouble;
+	}
+
+	char getHodnotaOperand() const {
+		return operand;
+	};
+
+	virtual typVyrazu getTypVyrazu() = 0;
+	
+};
+
+class Hodnota : public PrvekVyrazu {
+	
+public: 
+	Hodnota(int hodnota) : PrvekVyrazu(hodnota) {};
+	Hodnota(double hodnota) : PrvekVyrazu(hodnota) {};
+	virtual typVyrazu getTypVyrazu() override {
+		return typVyrazu::HODNOTA;
+	}
+};
+
+
+
+class Operator : public PrvekVyrazu {
+public:
+	Operator(char operat) : PrvekVyrazu(operat) {};
+	virtual typVyrazu getTypVyrazu() override {
+		return typVyrazu::OPERATOR;
+	}
+};
+
+
+template <typename Data, int cislo>
+class Kalkulator {
+	int pocetHodnot = 0;
+	int pocetMistZaokrouhleni = cislo;
+	PrvekVyrazu *poleVyrazu[10];
+
+public: 
+	~Kalkulator() {
+		for (int i = 0; i < pocetHodnot; i++)
+		{
+			delete poleVyrazu[i];
+		}		
+	};
+	
+	void pridejHodnotu(Data hodnota) {
+		Hodnota* h = new Hodnota(hodnota);
+		poleVyrazu[pocetHodnot++] = h;		
+	}
+
+	void pridejOperand(char operat) {
+		Operator* p = new Operator(operat);
+		poleVyrazu[pocetHodnot++] = p;		
+	}
+
+	void vypocitej() {
+		int kontrolaPoctuHodnot = 0;
+		int kontrolaPoctuOperator = 0;
+		char operat ='n';
+		double vysledek = 0;
+		double cislo = 0;
+	
+		for (int i = 0; i < pocetHodnot; i++)
+		{
+			PrvekVyrazu* p = poleVyrazu[i];
+			if (p->getTypVyrazu() == typVyrazu::HODNOTA) {
+				if (kontrolaPoctuHodnot == 1) {
+					throw VyjimkaKalkulatoru();
+				}
+								
+				if (i == 0) {
+					vysledek = p->getHodnotaVyrazuInt() + p->getHodnotaVyrazuDouble();
+					kontrolaPoctuHodnot++;
+				}
+				else {
+					kontrolaPoctuHodnot++;
+					cislo = p->getHodnotaVyrazuInt() + p->getHodnotaVyrazuDouble();					
+					kontrolaPoctuOperator--;
+				}
+				
+
+
+				if (operat != 'n') {
+
+					if (operat == '+') {
+						vysledek += cislo;
+					}
+					if (operat == '-') {
+						vysledek -= cislo;
+					}
+					if (operat == '/') {
+						vysledek /= cislo;
+					}
+					if (operat == '*') {
+						vysledek *= cislo;
+					}
+				
+				}
+			}
+			else {
+				if (kontrolaPoctuOperator == 1) {
+					throw VyjimkaKalkulatoru();
+				}
+
+				kontrolaPoctuOperator++;
+				kontrolaPoctuHodnot--;
+
+				 operat = p->getHodnotaOperand();			
+			}
+		}
+
+		cout << setprecision(pocetMistZaokrouhleni + 2 ) << vysledek << '\n';
+	};
+};
+
+
+
+
+
+
+
+int main() {
+	
+	Kalkulator<int,1> kalkulator{};
+	kalkulator.pridejHodnotu(10);	
+	kalkulator.pridejOperand('+');
+	kalkulator.pridejHodnotu(10);
+	kalkulator.pridejOperand('-');
+	kalkulator.pridejHodnotu(5);	
+	kalkulator.pridejOperand('/');
+	kalkulator.pridejHodnotu(3);
+	
+
+	Kalkulator<double, 1> kalkulatorDouble{};
+	kalkulatorDouble.pridejHodnotu(5.8465465);
+	kalkulatorDouble.pridejOperand('+');
+	kalkulatorDouble.pridejHodnotu(6.574893);
+	
+
+	try
+	{
+		kalkulator.vypocitej();
+		kalkulatorDouble.vypocitej();				
+	}
+	catch (VyjimkaKalkulatoru& e)
+	{
+		cout << e.what();
+	}
+
+	system("pause");
+}

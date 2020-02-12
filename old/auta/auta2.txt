@@ -1,0 +1,241 @@
+#include "StdAfx.h"
+
+using namespace std;
+
+class TAuto
+{
+    public:
+        union TDatum
+        {
+            unsigned int datum;
+
+            struct
+            {
+                unsigned int den : 5; // 1 - 31 - 5 b
+                unsigned int mesic : 4; // 1 - 12 - 4 b
+                unsigned int rok : 12; // 0 - 2100 - 12 b
+            };
+
+            void Nacti()
+            {
+                unsigned int pom;
+
+                cout << "Zadejte den porizeni: ";
+                cin >> pom;
+                den = pom;
+
+                cout << "Zadejte mesic porizeni: ";
+                cin >> pom;
+                mesic = pom;
+
+                cout << "Zadejte rok porizeni: ";
+                cin >> pom;
+
+                if (rok > 2100)
+                    rok = 2100;
+                else
+                    rok = pom;
+            }
+
+            string Vypis()
+            {
+                ostringstream stream;
+
+                stream << den << "-" << mesic << "-" << rok;
+
+                return stream.str();
+            }
+        };
+
+        TAuto(TDatum datum, string spz)
+        {
+            this->datum.datum = datum.datum;
+            this->spz = spz;
+        }
+
+        virtual string Vypis() = 0;
+
+    protected:
+        TDatum datum;
+        string spz;
+};
+
+class TOsobni : public TAuto
+{
+    public:
+        static unsigned int pocet;
+
+        TOsobni(unsigned int pocetMist, TDatum datum, string spz) : TAuto(datum, spz)
+        {
+            this->pocetMist = pocetMist;
+
+            pocet++;
+        }
+
+        ~TOsobni()
+        {
+            pocet--;
+        }
+
+        string Vypis()
+        {
+            stringstream stream;
+
+            stream << "Osobni;" << spz << ";" << datum.Vypis() << ";" << pocetMist << ";";
+
+            return stream.str();
+        }
+
+    private:
+        unsigned int pocetMist;
+};
+
+class TUzitkove : public TAuto
+{
+    public:
+        static unsigned int pocet;
+
+        TUzitkove(unsigned int nosnost, TDatum datum, string spz) : TAuto(datum, spz)
+        {
+            this->nosnost = nosnost;
+
+            pocet++;
+        }
+
+        ~TUzitkove()
+        {
+            pocet--;
+        }
+
+        string Vypis()
+        {
+            stringstream stream;
+
+            stream << "Uzitkove;" << spz << ";" << datum.Vypis() << ";" << nosnost << ";";
+
+            return stream.str();
+        }
+
+    private:
+        unsigned int nosnost;
+};
+
+unsigned int TOsobni::pocet = 0;
+unsigned int TUzitkove::pocet = 0;
+
+set<TAuto*> auta;
+
+int menu()
+{
+    int cislo = 0;
+
+    cout << "1. Pridat osobni vuz" << endl;
+    cout << "2. Pridat uzitkovy vuz" << endl;
+    cout << "3. Vypsat na obrazovku" << endl;
+    cout << "4. Exportovat do CSV" << endl;
+    cout << "5. Konec" << endl;
+
+    while (cislo < 1 || cislo > 5)
+    {
+        cout << "Zadejte vasi volbu: ";
+        cin >> cislo;
+        cin.clear();
+    }
+
+    return cislo;
+}
+
+int main()
+{
+    bool konec = false;
+
+    while (!konec)
+    {
+        int volba = menu();
+
+        switch (volba)
+        {
+            case 1:
+            {
+                string spz;
+                TAuto::TDatum datum;
+                unsigned int pocetMist = 0;
+
+                cout << "Zadejte SPZ: ";
+                cin >> spz;
+
+                datum.Nacti();
+
+                cout << "Zadejte pocet mist: ";
+                cin >> pocetMist;
+
+                TOsobni* o = new TOsobni(pocetMist, datum, spz);
+
+                auta.insert(o);
+            } break;
+
+            case 2:
+            {
+                string spz;
+                TAuto::TDatum datum;
+                unsigned int nosnost = 0;
+
+                cout << "Zadejte SPZ: ";
+                cin >> spz;
+
+                datum.Nacti();
+
+                cout << "Zadejte nosnost: ";
+                cin >> nosnost;
+
+                TUzitkove* u = new TUzitkove(nosnost, datum, spz);
+
+                auta.insert(u);
+            } break;
+
+            case 3:
+            {
+                cout << "Pocet osobnich vozu: " << TOsobni::pocet << endl;
+                cout << "Pocet uzitkovych vozu: " << TUzitkove::pocet << endl;
+
+                cout << "Typ;SPZ;Datum porizeni;Pocet mist/Nosnost;" << endl;
+                for (set<TAuto*>::const_iterator it = auta.begin(); it != auta.end(); it++)
+                    cout << (*it)->Vypis() << endl;
+            } break;
+
+            case 4:
+            {
+                string jmeno;
+                ofstream soubor;
+
+                cout << "Zadejte jmeno souboru: ";
+                cin >> jmeno;
+
+                soubor.open(jmeno.c_str());
+
+                if (!soubor.is_open())
+                    cout << "Nepodarilo se otevrit soubor pro zapis." << endl;
+                else
+                {
+                    soubor << "Typ;SPZ;Datum porizeni;Pocet mist/Nosnost;" << endl;
+                    for (set<TAuto*>::const_iterator it = auta.begin(); it != auta.end(); it++)
+                        soubor << (*it)->Vypis() << endl;
+
+                    soubor.close();
+                }
+            } break;
+
+            case 5:
+            {
+                konec = true;
+            } break;
+        }
+    }
+
+    for (set<TAuto*>::iterator it = auta.begin(); it != auta.end(); it++)
+        delete *it;
+
+    auta.clear();
+
+    return 0;
+}

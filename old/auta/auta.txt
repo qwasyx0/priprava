@@ -1,0 +1,114 @@
+#include <iostream>
+#include <stdlib.h>
+using namespace std;
+
+const int A = 20, M = 120, N = 20, P = 10, R1 = 150, R2 = 180;
+const double cas = 0.0166;
+//--------------------------------------------------------------------------------------------
+//--------------------------------AUTO--------------------------------------------------------
+//--------------------------------------------------------------------------------------------
+class Auto{															// trida Auto
+private:															// atributy kazdeho auta
+	int aCisloAuta, aPrumernaRychlost, aOprava, aVzdalenost;
+
+public:																// metody pro vsechna auta
+	Auto(int, int, int);
+	~Auto();
+	int	 Cislo();
+	void Pokracovat(int);
+	void Zastavit();
+	void Opravit(int);
+	int  Vzdalenost();
+};
+
+Auto::Auto(int cisloAuta, int prumernaRychlost, int oprava){		// konstrukor
+	int cisloAuta = rand() % N;
+	aCisloAuta = cisloAuta;
+	int prumernaRychlost = rand()%(R2-R1+1)+R1;;
+    aPrumernaRychlost = prumernaRychlost;
+	int oprava = rand() % P;
+    aOprava = oprava;
+
+    cout << "G" << aCisloAuta										// vypis konkretniho auta
+		 << "["	<< aPrumernaRychlost << "]" 
+		 << "[" << aOprava << "] ";
+}
+
+Auto::~Auto(){														// destruktor
+}
+
+int Auto::Cislo(){													// cislo auta
+	return aCisloAuta;
+}
+
+void Auto::Pokracovat(int vzdalenost){								// pricteni vzdalenosti autu
+	aVzdalenost = vzdalenost;
+	vzdalenost = aVzdalenost + cas * aPrumernaRychlost;
+}
+
+void Auto::Zastavit(){												// zastavi auto
+	cout << "Z" << aCisloAuta;
+}
+
+void Auto::Opravit(int prumernaRychlost){							// zmensi prum. rychlost autu
+	aPrumernaRychlost = prumernaRychlost;
+	prumernaRychlost = aPrumernaRychlost - (aPrumernaRychlost * (aOprava / 100));
+	cout << "O" << aCisloAuta << " ";
+}
+
+int Auto::Vzdalenost(){												// aktualni vzdalenost auta
+	return aVzdalenost;
+}
+
+//---------------------------------------------------------------------------------------------------------
+//--------------------------------------ZAVOD--------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------
+class Zavod:public Auto{											// trida zavod (dedi auta z tridy auto)
+private:															// pole vsech aut
+	int *poleaut;
+public:																// metody tridy Zavod
+	Zavod();
+	~Zavod();
+	void vlozitAuto(int, Auto);
+	void Pozice();
+	void dalsiMinuta();
+};
+
+Zavod::Zavod(){														// konstruktor
+	
+}
+
+Zavod::~Zavod(){													// destruktor
+}
+
+void Zavod::vlozitAuto(int i, Auto a){								// vlozeni auta do zavodu
+
+}
+
+void Zavod::Pozice(){												// aktualni pozice auta
+
+
+}
+
+void Zavod::dalsiMinuta(){											// rozdeleni cinnosti autu
+	switch (rand()%3){
+	case 0:
+		poleaut[i]->Pokracovat();
+		break;
+	case 1:
+		poleaut[i]->Zastavit();
+		break;
+	case 2:
+		poleaut[i]->Opravit();
+		break;
+	}
+}
+//----------------------------------------------------------------------------------------
+//------------------------------------MAIN------------------------------------------------
+//----------------------------------------------------------------------------------------
+int main(){															// main
+	Auto **poleaut = new Auto *[N];									// alokovani pole aut (zatim neni funkcni)
+	for(int i=0; i<N; i++){
+         poleaut[i] = new Auto(aCisloAuta, aPrumernaRychlost, aOprava);
+      }
+}

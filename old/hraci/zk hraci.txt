@@ -1,0 +1,187 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+using namespace std;
+
+
+class Hrac {
+	private:
+		int id;
+		string jmeno;
+		string prijmeni;
+		int cisloDresu;
+		double plat;
+
+	public:
+		Hrac() {
+			id = 0;
+			cisloDresu = 0;
+			plat = 0.0;
+		}
+		Hrac(int id, string jmeno, string prijmeni, int dres, double plat)
+			:id(id), jmeno(jmeno), prijmeni(prijmeni), cisloDresu(dres), plat(plat){}
+		virtual ~Hrac() {}
+		
+		string dejJmeno() const {return jmeno;}
+		string dejPrijmeni() const {return prijmeni;}
+		int dejID() const {return id;}
+		int dejCisloDresu() const {return cisloDresu;}
+		double dejPlat() const {return plat;}
+		void nastavID(int id) {this->id = id;}
+		void nastavJmeno(string jmeno) {this->jmeno = jmeno;}
+		void nastavPrijmeni(string prijmeni) {this->prijmeni = prijmeni;}
+		void nastavcisloDresu(int cislo) {this->cisloDresu = cislo;}
+		void nastavPlat(double plat) {this->plat = plat;}
+};
+
+
+int _tmain(int argc, _TCHAR* argv[])
+{
+	string htmlHlava = "<!DOCTYPE html>\n<html>\n<style = \"text/css\">\nbody {background: white;}\ntable {border: 1px solid black; width: 600px; margin: 20px auto}\ntable tr:nth-child(odd) {background: #cc;}\n</style>\n<head><title>Seznam hracu</title></head>\n<body>\n<table>\n<tr><th>id</th><th>jmeno prijmeni</th><th>dres</th><th>plat</th></tr>\n<!-- start generovaneho vystupu //-->\n";
+	string htmKonec = "<!-- konec generovaneho vystupu //-->\n</table>\n</body>\n</html>";
+
+	//Nacitani hracu
+	ifstream in;
+	in.open("players.txt", ios::in);	
+	if (!in.is_open()) {
+		cout << "Soubor players.txt nelze otevrit\n";
+		system("pause");
+		return 0;
+	}
+	cout << "Soubor players.txt otevren\n";
+
+	int pocetHracu = 0;
+	double platy = 0;
+	double prumer = 0;
+	Hrac *seznam;
+	string line;
+
+	getline(in, line);
+	pocetHracu = atoi((char*)line.c_str());
+	seznam = new Hrac[pocetHracu];
+
+	for (int i = 0; i < pocetHracu; i++) {
+		string jmeno;
+		string prijmeni;
+		int cislo;
+		int id;
+		double plat;
+
+		getline(in,line);
+		id = atoi((char*)line.c_str());
+		getline(in,jmeno);
+		getline(in,prijmeni);
+		getline(in,line);
+		cislo = atoi((char*)line.c_str());
+		getline(in,line);
+		plat = atof((char*)line.c_str());
+		seznam[i] = Hrac(id, jmeno, prijmeni, cislo, plat);
+		platy += plat;
+	}
+	prumer = platy / pocetHracu;
+	in.close();
+	cout << "Soubor players.txt uspesne nacten\n";
+
+	//Ulozeni do players_id.html
+	ofstream out;
+	cout << "Vytvarim players_id.html\n";
+	out.open("players_id.html");	
+	if (!out.is_open()) {
+		cout << "Soubor players_id.html nelze vytvorit\n";
+		system("pause");
+		return 0;
+	}
+
+	out << htmlHlava;
+	for (int i = 0; i < pocetHracu; i++) {
+        for (int j = 0; j < i; j++) {
+			if (seznam[i].dejID() > seznam[j].dejID()) {
+                Hrac temp = seznam[i];
+                seznam[i] = seznam[j];
+                seznam[j] = temp;
+            }
+        }
+    }
+	for (int i = 0; i < pocetHracu; i++) {
+		out << "<tr><td>" << seznam[i].dejID() << "</td>";
+		out << "<td>" << seznam[i].dejJmeno() << " ";
+		out << seznam[i].dejPrijmeni() << "</td>";
+		out << "<td>" << seznam[i].dejCisloDresu() << "</td>";
+		out << "<td>";
+		if(seznam[i].dejPlat() > prumer) out << "nadprumer";
+		else out <<"podprumer";
+		out << "</td></tr>\n";
+	}
+	out << htmKonec;
+	out.close();
+	cout << "Uspesne ulozeno do players_id.html\n";
+
+	//ulozeni do players_jersey.html
+	out.open("players_jersey.html");
+	
+	if (!out.is_open()) {
+		cout << "Soubor players_jersey.html nelze vytvorit\n";
+		system("pause");
+		return 0;
+	}
+	out << htmlHlava;
+	for (int i = 0; i < pocetHracu; i++) {
+        for (int j = 0; j < i; j++) {
+			if (seznam[i].dejCisloDresu() > seznam[j].dejCisloDresu()) {
+                Hrac temp = seznam[i];
+                seznam[i] = seznam[j];
+                seznam[j] = temp;
+            }
+        }
+    }
+	for (int i = 0; i < pocetHracu; i++) {
+		out << "<tr><td>" << seznam[i].dejID() << "</td>";
+		out << "<td>" << seznam[i].dejJmeno() << " ";
+		out << seznam[i].dejPrijmeni() << "</td>";
+		out << "<td>" << seznam[i].dejCisloDresu() << "</td>";
+		out << "<td>";
+		if(seznam[i].dejPlat() > prumer) out << "nadprumer";
+		else out <<"podprumer";
+		out << "</td></tr>\n";
+	}
+	out << htmKonec;
+	out.close();
+	cout << "Uspesne ulozeno do players_jersey.html\n";
+
+	//ulozeni do players_lastname.html
+	out.open("players_lastname.html");
+	
+	if (!out.is_open()) {
+		cout << "Soubor players_lastname.html nelze vytvorit\n";
+		system("pause");
+		return 0;
+	}
+
+	out << htmlHlava;
+	for (int i = 0; i < pocetHracu; i++) {
+        for (int j = 0; j < i; j++) {
+			if (strcmp(seznam[i].dejPrijmeni().c_str(), seznam[j].dejPrijmeni().c_str()) < 0) {
+                Hrac temp = seznam[i];
+                seznam[i] = seznam[j];
+                seznam[j] = temp;
+            }
+        }
+    }
+	for (int i = 0; i < pocetHracu; i++) {
+		out << "<tr><td>" << seznam[i].dejID() << "</td>";
+		out << "<td>" << seznam[i].dejJmeno() << " ";
+		out << seznam[i].dejPrijmeni() << "</td>";
+		out << "<td>" << seznam[i].dejCisloDresu() << "</td>";
+		out << "<td>";
+		if(seznam[i].dejPlat() > prumer) out << "nadprumer";
+		else out <<"podprumer";
+		out << "</td></tr>\n";
+	}
+	out << htmKonec;
+	out.close();
+	cout << "Uspesne ulozeno do players_lastname.html\n";
+
+	//konec
+	system("pause");
+	return 0;
+}

@@ -1,0 +1,259 @@
+
+#include <iostream>
+#include <stdio.h>
+#include <string>
+
+using namespace std;
+
+template <typename U>
+struct Polozka {
+    U* obsah;
+    Polozka<U>* predchozi;
+};
+
+template <typename T>
+class LIFO {
+
+    enum stavZasobniku {
+   	 NEINICIALIZOVANE = -1, PRAZDNE = 0, NEPRAZDNE = 1, PLNE = 2
+    };
+
+    enum {
+   	 MAX_SIZE = 20
+    };
+private:
+    Polozka<T>* aktualni;
+    Polozka<T>* posledni;
+    int index;
+    stavZasobniku stav;
+public:
+
+    LIFO<T>();
+
+    void init();
+
+    bool isEmpty();
+
+    bool isFull();
+
+    void push(T* object);
+
+    T* pop();
+
+    void view();
+
+    void viewStatus();
+
+    ~LIFO() {
+   	 // TODO: destruktor
+    }
+};
+
+template <typename T>
+LIFO<T>::LIFO() {
+    this->stav = NEINICIALIZOVANE;
+}
+
+template <typename T>
+void LIFO<T>::init() {
+    if (stav == NEINICIALIZOVANE) {
+   	 this->stav = PRAZDNE;
+   	 this->index = 1;
+   	 this->posledni = NULL;
+   	 this->aktualni = NULL;
+    } else
+   	 cout << "Zasobnik je jiz inicializovany" << endl;
+}
+
+template <typename T>
+bool LIFO<T>::isEmpty() {
+    return (this->stav == PRAZDNE);
+}
+
+template <typename T>
+bool LIFO<T>::isFull() {
+    return (this->stav == PLNE);
+}
+
+template <typename T>
+void LIFO<T>::push(T* object) {
+
+    T* obsah = new T();
+
+    Polozka<T>* nove = new Polozka<T>();
+    nove->obsah = object;
+    nove->predchozi = NULL;
+
+    if (this->stav == NEINICIALIZOVANE)
+   	 this->init();
+
+    if (this->posledni == NULL) {
+   	 this->posledni = nove;
+   	 this->aktualni = this->posledni;
+    } else if (!isFull()) {
+   	 nove->predchozi = this->aktualni;
+   	 this->aktualni = nove;
+   	 index++;
+    }
+
+    if (this->index == MAX_SIZE) {
+   	 this->stav = PLNE;
+    }
+
+    if (isEmpty())
+   	 this->stav = NEPRAZDNE;
+
+}
+
+template <typename T>
+T* LIFO<T>::pop() {
+    T* pom;
+    if (this->isEmpty() || this->stav == NEINICIALIZOVANE) {
+   	 cout << "Zasobnik je prazdny neni co odstranovat" << endl;
+   	 return NULL;
+    } else {
+
+   	 this->index--;
+
+   	 if (!this->isEmpty()) {
+   		 pom = this->aktualni->obsah;
+   		 Polozka<T>* item = this->aktualni;
+   		 this->aktualni = this->aktualni->predchozi;
+   		 delete item;
+
+   		 if (this->index == 0) {
+   			 stav = PRAZDNE;
+   			 this->index = 0;
+   		 }
+   	 }
+   	 return pom;
+    }
+}
+
+template <typename T>
+void LIFO<T>::view() {
+    Polozka<T>* Aktualni = aktualni;
+
+    while (Aktualni != NULL) {
+   	 cout << *Aktualni->obsah << endl;
+
+   	 Aktualni = Aktualni->predchozi;
+    }
+}
+
+void LIFO<double>::view() {
+    Polozka<double>* Aktualni = this->aktualni;
+
+    while (Aktualni != NULL) {
+   	 printf("%.2f", *Aktualni->obsah);
+   	 cout << endl;
+
+   	 Aktualni = Aktualni->predchozi;
+    }
+}
+
+template <typename T>
+void LIFO<T>::viewStatus() {
+    switch (this->stav) {
+   	 case NEINICIALIZOVANE:
+   		 cout << "Zasobnik je NEINICIALIZOVANY" << endl;
+   		 break;
+   	 case PRAZDNE:
+   		 cout << "Zasobnik je PRAZDNY" << endl;
+   		 break;
+   	 case NEPRAZDNE:
+   		 cout << "Zasobnik je NEPRAZDNY" << endl;
+   		 break;
+   	 case PLNE:
+   		 cout << "Zasobnik je PLNY" << endl;
+   		 break;
+    }
+}
+
+int main(int argc, char** argv) {
+    LIFO<string>* l1 = new LIFO<string>();
+    LIFO<double>* l2 = new LIFO<double>();
+
+    int volba = 0;
+    int pomVolba = 0;
+    while (pomVolba == 0) {
+   	 cout << "Menu" << endl
+   			 << " 1. Zasobnik na text" << endl
+   			 << " 2. Zasobnik na realna cisla" << endl
+   			 << "Vyberte prosim moznost:" << endl;
+   	 cin >> pomVolba;
+
+   	 switch (pomVolba) {
+   		 case 1:
+   			 volba = 1;
+   			 break;
+   		 case 2:
+   			 volba = 2;
+   			 break;
+   		 default:
+   			 pomVolba = 0;
+   			 cout << "Nebyla vybrana nabizena volba" << endl;
+   	 }
+    }
+
+    pomVolba = 0;
+
+    while (pomVolba == 0) {
+   	 cout << endl << "-------------------------" << endl
+   			 << "Menu" << endl
+   			 << " 1. Pridat polozku" << endl
+   			 << " 2. Odebrat prvni polozku" << endl
+   			 << " 3. Stav zasobniku" << endl
+   			 << " 4. Vytisknout" << endl
+   			 << " 5. Ukoncit Program" << endl
+   			 << "Vyberte prosim moznost:";
+   	 cin >> pomVolba;
+   	 cin.ignore();
+   	 if (pomVolba != 5 && volba == 1) {
+   		 if (pomVolba == 1) {
+   			 string* pom = new string;
+   			 cout << "Zadejte obsah polozky: " << endl;
+   			 getline(cin, *pom);
+   			 l1->push(pom);
+   		 } else if (pomVolba == 2) {
+   			 string* pom = l1->pop();
+   			 if (pom != NULL)
+   				 cout << "Byla odstranena polozka s obsahem \"" << *pom << "\"" << endl;
+   		 } else if (pomVolba == 3) {
+   			 l1->viewStatus();
+   		 } else if (pomVolba == 4) {
+   			 l1->view();
+
+   		 }
+   		 pomVolba = 0;
+   	 } else if (pomVolba != 5 && volba == 2) {
+   		 if (pomVolba == 1) {
+   			 double* pom = new double;
+   			 cout << "Zadejte obsah polozky: " << endl;
+   			 cin >> *pom;
+   			 l2->push(pom);
+   		 } else if (pomVolba == 2) {
+   			 double* pom = l2->pop();
+   			 if (pom != NULL)
+   				 cout << "Byla odstranena polozka s obsahem \"" << *pom << "\"" << endl;
+
+   		 } else if (pomVolba == 3) {
+   			 l2->viewStatus();
+   		 } else if (pomVolba == 4) {
+   			 l2->view();
+   		 }
+   		 pomVolba = 0;
+   	 } else {
+   		 break;
+   	 }
+    }
+
+    cout << "-- Konec programu --" << endl;
+    delete l1;
+    delete l2;
+    system("PAUSE");
+    return 0;
+}
+
+
+

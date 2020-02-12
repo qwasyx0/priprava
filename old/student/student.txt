@@ -1,0 +1,120 @@
+#include "stdafx.h"
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <string.h>
+using namespace std;
+ 
+ 
+class Student {
+ 
+protected:
+unsigned int cislo;
+char* jmeno;
+ 
+public:
+Student();
+Student(unsigned int Scislo, char* Sjmeno){cislo=Scislo; jmeno=Sjmeno;}
+int getCislo()const {return cislo;}
+char* getJmeno()const {return jmeno;}
+virtual string ToString() =0;
+virtual void vypisTema() const =0;
+};
+ 
+ 
+ 
+ 
+class Bakalar : public Student {
+ 
+protected:
+        char* temaBP;
+ 
+public:
+        Bakalar(unsigned int Bcislo, char* Bjmeno, char* BtemaBP);
+        void vypisTema() const;
+        string ToString();
+
+};
+ 
+Bakalar::Bakalar(unsigned int Bcislo, char* Bjmeno, char* BtemaBP): Student(Bcislo,Bjmeno){
+        jmeno=Bjmeno;
+        temaBP=BtemaBP;
+        cislo=Bcislo;
+}
+ 
+void Bakalar::vypisTema() const {
+        cout << "Téma bakalářky" << endl;
+        cout << temaBP <<endl;
+}
+ 
+string Bakalar::ToString(){
+        stringstream ss;
+        ss << "Cislo: " << cislo << " Jmeno: " << jmeno;
+        return ss.str();
+ 
+}
+ 
+ 
+
+ 
+ 
+ 
+class Magistr : public Bakalar{
+ 
+private:
+        char* temaDP;
+public:
+        Magistr(unsigned int Mcislo, char* Mjmeno, char * MtemaBP ,char* MtemaDP);
+
+        void vypisTema() const;
+        string ToString();
+
+};
+ 
+Magistr::Magistr(unsigned int Mcislo, char* Mjmeno, char * MtemaBP ,char* MtemaDP) : Bakalar(Mcislo, Mjmeno,MtemaBP)
+{
+        cislo = Mcislo;
+        jmeno = Mjmeno;
+        temaBP=MtemaBP;
+        temaDP = MtemaDP;
+}
+ 
+void Magistr::vypisTema() const{
+        cout << "Téma dimplomky" << endl;
+        cout << temaDP << endl;
+		cout << "Tema bakalary" <<endl;
+		cout << temaBP <<endl;
+}
+ 
+string Magistr::ToString(){
+        stringstream ss;
+        ss << "Cislo: " << cislo << " Jmeno: " <<jmeno ;
+        return ss.str();
+ 
+}
+ 
+ 
+int main(int argc, char * argv[])
+{
+       
+        Bakalar bk1(1, "Tomáš Debil", "Site");
+        Bakalar bk2(2, "Michal Idiot", "Programovani");
+        Magistr mg1(3, "Filip Strup", "Algoritmizace","novjdksd");
+        Magistr mg2(4, "Eda Vesely", "Chujovina","dsdkjsd");
+        Student *pole[4];
+        pole[0]=&bk1;
+        pole[1]=&bk2;
+        pole[2]=&mg1;
+        pole[3]=&mg2;
+ 
+      
+ 
+        for(int i=0;i<4;i++){
+                cout << "----------------------" << endl;
+                cout << pole[i]->ToString()<< endl;
+                pole[i]->vypisTema();
+                cout << "----------------------" << endl;
+        }
+		system("pause");
+        return 0;
+}

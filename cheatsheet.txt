@@ -1,0 +1,251 @@
+//Zvetseni dynamickeho pole
+Osoba** temp = new Osoba*[pocetOsob+1];
+for (int i = 0; i < pocetOsob; i++)
+{
+	temp[i] = osoby[i];
+}
+temp[pocetOsob] = new Osoba(id, pohlavi, radek);
+pocetOsob++;
+osoby = temp;
+
+
+//cteni istream
+std::string radek;
+std::string token;
+int pozice;
+while (getline(is, radek))
+{
+	pozice = radek.find(" ");
+	token = radek.substr(0, pozice);
+	//smazani tokenu + mezery
+	radek.erase(0, pozice + 1);
+	if (token == "OSOBA") {
+		int id;
+		pozice = radek.find(" ");
+		token = radek.substr(0, pozice);
+		//validace
+		try {
+			id = stoi(token);
+		}
+		catch(...) {
+			std::cout << "id neni cislo" << std::endl;
+		}
+		//smazani tokenu + mezery
+		radek.erase(0, pozice + 1);
+		//pohlavi
+		char pohlavi;
+		pozice = radek.find(" ");
+		...
+		//Pak zvetseni dynamickeho pole
+	}
+
+
+//dalsi istream / ifstream
+#include <iostream>
+std::ifstream inFile("rodokmen.txt");	
+Rodokmen rodokmen(inFile);
+Rodokmen::Rodokmen(std::istream & stream)
+{
+while (!stream.eof()) 
+	{
+		stream >> buffer;
+		if (buffer == "OSOBA")
+		{
+			int id;
+			std::string jmeno;
+			char pohlavi;
+			stream >> id;
+			stream >> pohlavi;
+			stream >> jmeno;
+	}
+}
+//prednaska - zapis
+#include <iostream> 
+#include <fstream>
+using namespace std;
+
+ofstream out{};
+out.open ("pokus.txt");
+if (out.is_open())
+{
+	out << "radka textu";
+	out.close();
+}
+else
+cerr <<"Soubor se nepodarilo otevrit...";
+
+//prednaska - cteni
+#include <iostream> 
+#include <fstream>
+using namespace std;
+string slovo{};
+ifstream in{};
+in.open("temp.txt");
+if(in.is_open())
+{
+	while(in >> slovo)
+		cout << slovo <<"";
+		cout << endl; 
+	}
+}
+//
+in.get(znak); // na£te znak
+in >> text; // na£te text po první bílý znak (dle nastavení proudu)
+in.getline(text,50); // na£te °ádek (max. 50 znak·)
+in.read(text, 50); // na£te 50 znak·
+while (in.get(znak)){ ... } // £te dokud jsou k dispozici znaky
+//
+
+//prednasky - binarni zapis
+int pole[4] = {1, 2, 3, 4};
+ofstream out{};
+out.open("vystup.dat", ios_base::binary);
+if (out.is_open()) {
+	out.write((char ∗)pole, sizeof(pole));
+	out.close();
+}
+else
+cerr << "Nepodarilo se otevrit!" << endl;
+
+//prednasky - binarni cteni
+char pole[4];
+ifstream in{};
+in.open("vstup.dat", ios_base::binary);
+if (out.is_open()) {
+	in.read((char ∗)pole, sizeof(pole));
+	in.close();
+}
+else
+cerr << "Nepodarilo se otevrit!" << endl
+
+seekg(pozice, vychoziBod = ios_base::beg) (seek get)  posun čtecího kurzoru
+seekp(pozice, vychoziBod = ios_base::beg) (seek put)  posun zapisovacího kurzoru
+--
+ios_base::beg  po£et bajt· od po£átku souboru
+ios_base::end  po£et bajt· od konce souboru
+ios_base::cur  po£et bajt· od aktuální pozice kurzoru
+//Příklad
+inputfile.seekg(20, ios_base::beg);
+
+//Smazani ***pole
+if (tableCount > 0) {
+	for (int i = 0; i < tableCount; i++) {
+		delete tables[i];
+	}
+	delete[] tables;
+}
+delete this;
+
+
+//Odebrani prvku ** z *** pole
+			bool odebrano = false;
+			int indexOdebrano = -1;
+			for (int i = 0; i < columns; i++) {
+				tempData[i] = new Object * [rowsMinusOne];
+				for (int j = 0; j < rows; j++) {
+					if (j == rowid) {
+						odebrano = true;
+						indexOdebrano = j;
+					}
+					if (odebrano) {
+						tempData[i][j - 1] = this->data[i][j];
+					}
+					else {
+						tempData[i][j] = this->data[i][j];
+					}
+				}
+				odebrano = false;
+			}
+			if (indexOdebrano > -1) {
+//zmenseni puvodniho dyn. pole
+				for (int i = 0; i < columns; i++) {
+					for (int j = 0; j < rows; j++) {
+						if (j == indexOdebrano) {
+							delete this->data[i][j - 1];
+						}
+					}
+					delete[] this->data[i];
+				}
+				delete[] data;
+			}
+			this->data = tempData;
+			this->rows = rows - 1;
+
+
+//vyjimky
+	try {
+		if (index <= _pocetPlatnychPrvku) {
+			//...
+		}
+		else {
+			throw std::invalid_argument("Index out of range");
+		}
+	}
+	catch (const std::invalid_argument & ia) {
+		std::cerr << "Invalid argument: " << ia.what() << '\n';
+	}
+
+logic_error
+	I invalid_argument
+	I domain_error
+	I length_error
+	I out_of_range
+	I future_errorC++11
+	I bad_optional_accessC++17
+runtime_error
+	I range_error
+	I overflow_error
+	I underflow_error
+	I regex_errorC++11
+	I system_errorC++11
+		F ios_base::failureC++11
+		F filesystem::filesystem_errorC++17
+
+bad_typeid
+bad_cast
+	I bad_any_castC++17
+bad_weak_ptrC++11
+bad_function_callC++11
+bad_alloc
+	I bad_array_new_lengthC++11
+bad_exception
+bad_variant_accessC++17
+
+
+//trida string
+operator[] 		 procházení znaků
+c_str() 		 konverze na const char∗
+begin(), end() 		 iterátory
+empty(), size() 	 test prázdnosti/test délky řetězce
+insert(), erase() 	 vkládání, mazání znaků
+substr() 		 výběr podřetězce
+find(), rfind() 	 hledání podřetězce
+find_first_of(), find_first_not_of() 	 hledání znaků
+find_last_of(), find_last_not_of() 	 hledání znaků
+porovávací operátory, replace(), at(), data(), . . .
+
+std::string to_string(int/long/oat/double) 	 převod na string
+stoul(), stoull() 		 převod na unsigned £ísla
+stoil(), stol(), stoll() 	 převod na signed £ísla
+stof(), stod(), stold() 	 převod na desetinná £ísla
+
+//Přetížení operátorů 
+struct KomplexniCislo {
+KomplexniCislo(double r, double i) : re(r), im(i) { }
+	double re;
+	double im;
+};
+ostream& operator<<(ostream& os, const KomplexniCislo& obj) {
+	os << obj.re << " " << obj.im;
+	return os;
+}
+istream& operator>>(istream& is, KomplexniCislo& obj) {
+	is >> obj.re >> obj.im;
+	return is;
+}
+
+
+//template pouziti - template<typename TypDat, int PocatecniVelikost, int RostouciKoeficient>
+	string s{ "ahoj"};
+    	RostouciKontejner<string, 5,2> kontejner{};
+	kontejner.vloz(s);
